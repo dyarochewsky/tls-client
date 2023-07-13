@@ -107,7 +107,7 @@ func TestClient_SkipExistingCookiesOnSetCookiesResponse(t *testing.T) {
 		},
 	}
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -153,7 +153,7 @@ func TestClient_SkipExistingCookiesOnSetCookiesResponse(t *testing.T) {
 		},
 	}
 
-	resp, err = client.Do(req)
+	resp, _, err = client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}

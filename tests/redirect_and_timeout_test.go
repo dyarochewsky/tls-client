@@ -33,7 +33,7 @@ func TestClient_RedirectNoFollowWithSwitch(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -42,7 +42,7 @@ func TestClient_RedirectNoFollowWithSwitch(t *testing.T) {
 
 	client.SetFollowRedirect(true)
 
-	resp, err = client.Do(req)
+	resp, _, err = client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,7 +71,7 @@ func TestClient_RedirectFollowWithSwitch(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -80,7 +80,7 @@ func TestClient_RedirectFollowWithSwitch(t *testing.T) {
 
 	client.SetFollowRedirect(false)
 
-	resp, err = client.Do(req)
+	resp, _, err = client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -110,7 +110,7 @@ func TestClient_TestFailWithTimeout(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 
 	assert.Nil(t, resp)
 	assert.Error(t, err)

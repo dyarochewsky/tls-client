@@ -12,6 +12,7 @@ import (
 
 	http "github.com/bogdanfinn/fhttp"
 	"github.com/bogdanfinn/fhttp/httputil"
+	harlog "github.com/vvakame/go-harlog"
 	"golang.org/x/net/proxy"
 )
 
@@ -29,10 +30,10 @@ type HttpClient interface {
 	SetFollowRedirect(followRedirect bool)
 	GetFollowRedirect() bool
 	CloseIdleConnections()
-	Do(req *http.Request) (*http.Response, error)
-	Get(url string) (resp *http.Response, err error)
-	Head(url string) (resp *http.Response, err error)
-	Post(url, contentType string, body io.Reader) (resp *http.Response, err error)
+	Do(req *http.Request) (*http.Response, *harlog.HARContainer, error)
+	Get(url string) (resp *http.Response, hr *harlog.HARContainer, err error)
+	Head(url string) (resp *http.Response, hr *harlog.HARContainer, err error)
+	Post(url, contentType string, body io.Reader) (resp *http.Response, hr *harlog.HARContainer, err error)
 }
 
 // Interface guards are a cheap way to make sure all methods are implemented, this is a static check and does not affect runtime performance.
@@ -40,9 +41,11 @@ var _ HttpClient = (*httpClient)(nil)
 
 type httpClient struct {
 	http.Client
-	headerLck sync.Mutex
-	logger    Logger
-	config    *httpClientConfig
+	headerLck    sync.Mutex
+	logger       Logger
+	config       *httpClientConfig
+	harTransport *harlog.Transport
+	harLog       *harlog.Log
 }
 
 var DefaultTimeoutSeconds = 30
@@ -78,7 +81,7 @@ func NewHttpClient(logger Logger, options ...HttpClientOption) (HttpClient, erro
 		return nil, err
 	}
 
-	client, clientProfile, err := buildFromConfig(config)
+	client, hrTransport, clientProfile, err := buildFromConfig(config)
 	if err != nil {
 		return nil, err
 	}
@@ -98,10 +101,11 @@ func NewHttpClient(logger Logger, options ...HttpClientOption) (HttpClient, erro
 	}
 
 	return &httpClient{
-		Client:    *client,
-		logger:    logger,
-		config:    config,
-		headerLck: sync.Mutex{},
+		Client:       *client,
+		logger:       logger,
+		config:       config,
+		headerLck:    sync.Mutex{},
+		harTransport: hrTransport,
 	}, nil
 }
 
@@ -109,14 +113,14 @@ func validateConfig(_ *httpClientConfig) error {
 	return nil
 }
 
-func buildFromConfig(config *httpClientConfig) (*http.Client, ClientProfile, error) {
+func buildFromConfig(config *httpClientConfig) (*http.Client, *harlog.Transport, ClientProfile, error) {
 	var dialer proxy.ContextDialer
 	dialer = newDirectDialer(config.timeout, config.localAddr)
 
 	if config.proxyUrl != "" {
 		proxyDialer, err := newConnectDialer(config.proxyUrl, config.timeout, config.localAddr)
 		if err != nil {
-			return nil, ClientProfile{}, err
+			return nil, nil, ClientProfile{}, err
 		}
 
 		dialer = proxyDialer
@@ -137,12 +141,15 @@ func buildFromConfig(config *httpClientConfig) (*http.Client, ClientProfile, err
 
 	transport, err := newRoundTripper(clientProfile, config.transportOptions, config.serverNameOverwrite, config.insecureSkipVerify, config.withRandomTlsExtensionOrder, config.forceHttp1, config.certificatePins, config.badPinHandler, config.disableIPV6, dialer)
 	if err != nil {
-		return nil, clientProfile, err
+		return nil, nil, clientProfile, err
+	}
+	harTransport := &harlog.Transport{
+		Transport: transport,
 	}
 
 	client := &http.Client{
 		Timeout:       config.timeout,
-		Transport:     transport,
+		Transport:     harTransport,
 		CheckRedirect: redirectFunc,
 	}
 
@@ -150,7 +157,7 @@ func buildFromConfig(config *httpClientConfig) (*http.Client, ClientProfile, err
 		client.Jar = config.cookieJar
 	}
 
-	return client, clientProfile, nil
+	return client, harTransport, clientProfile, nil
 }
 
 // CloseIdleConnections closes all idle connections of the underlying http client.
@@ -264,7 +271,7 @@ func (c *httpClient) GetCookieJar() http.CookieJar {
 // Do issues a given HTTP request and returns the corresponding response.
 //
 // If the returned error is nil, the response contains a non-nil body, which the user is expected to close.
-func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
+func (c *httpClient) Do(req *http.Request) (*http.Response, *harlog.HARContainer, error) {
 	if c.config.catchPanics {
 		defer func() {
 			err := recover()
@@ -290,7 +297,7 @@ func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
 		if req.Body != nil {
 			buf, err := io.ReadAll(req.Body)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 
 			debugBody := io.NopCloser(bytes.NewBuffer(buf))
@@ -304,7 +311,7 @@ func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
 
 		requestBytes, err := httputil.DumpRequestOut(debugReq, debugReq.ContentLength > 0)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		c.logger.Debug("raw request bytes sent over wire: %d (%d kb)", len(requestBytes), len(requestBytes)/1024)
@@ -313,7 +320,7 @@ func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
 	resp, err := c.Client.Do(req)
 	if err != nil {
 		c.logger.Debug("failed to do request: %s", err.Error())
-		return nil, err
+		return nil, nil, err
 	}
 
 	c.logger.Debug("headers on request:\n%v", req.Header)
@@ -325,13 +332,13 @@ func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
 	if c.config.debug {
 		responseBytes, err := httputil.DumpResponse(resp, resp.ContentLength > 0)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
 		if resp.Body != nil {
 			buf, err := io.ReadAll(resp.Body)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			defer resp.Body.Close()
 
@@ -345,31 +352,31 @@ func (c *httpClient) Do(req *http.Request) (*http.Response, error) {
 		c.logger.Debug("raw response bytes received over wire: %d (%d kb)", len(responseBytes), len(responseBytes)/1024)
 	}
 
-	return resp, nil
+	return resp, c.harTransport.HAR(), nil
 }
 
-func (c *httpClient) Get(url string) (resp *http.Response, err error) {
+func (c *httpClient) Get(url string) (resp *http.Response, hr *harlog.HARContainer, err error) {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	return c.Do(req)
 }
 
-func (c *httpClient) Head(url string) (resp *http.Response, err error) {
+func (c *httpClient) Head(url string) (resp *http.Response, hr *harlog.HARContainer, err error) {
 	req, err := http.NewRequest(http.MethodHead, url, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	return c.Do(req)
 }
 
-func (c *httpClient) Post(url, contentType string, body io.Reader) (resp *http.Response, err error) {
+func (c *httpClient) Post(url, contentType string, body io.Reader) (resp *http.Response, hr *harlog.HARContainer, err error) {
 	req, err := http.NewRequest(http.MethodPost, url, body)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	req.Header.Set("Content-Type", contentType)

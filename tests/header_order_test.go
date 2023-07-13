@@ -39,7 +39,7 @@ func TestClient_HeaderOrder(t *testing.T) {
 		},
 	}
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -74,7 +74,7 @@ func TestClient_HeaderOrder(t *testing.T) {
 		},
 	}
 
-	resp, err = client.Do(req)
+	resp, _, err = client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -127,7 +127,7 @@ func TestClient_HeaderOrderHttp1(t *testing.T) {
 		},
 	}
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -162,7 +162,7 @@ func TestClient_HeaderOrderHttp1(t *testing.T) {
 		},
 	}
 
-	resp, err = client.Do(req)
+	resp, _, err = client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}

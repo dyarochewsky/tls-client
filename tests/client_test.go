@@ -124,7 +124,7 @@ func chrome112(t *testing.T) {
 
 	req.Header = defaultHeader
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -149,7 +149,7 @@ func chrome111(t *testing.T) {
 
 	req.Header = defaultHeader
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -174,7 +174,7 @@ func chrome110(t *testing.T) {
 
 	req.Header = defaultHeader
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -199,7 +199,7 @@ func chrome109(t *testing.T) {
 
 	req.Header = defaultHeader
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -224,7 +224,7 @@ func chrome108(t *testing.T) {
 
 	req.Header = defaultHeader
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -249,7 +249,7 @@ func chrome107(t *testing.T) {
 
 	req.Header = defaultHeader
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -274,7 +274,7 @@ func chrome105(t *testing.T) {
 
 	req.Header = defaultHeader
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -299,7 +299,7 @@ func chrome104(t *testing.T) {
 
 	req.Header = defaultHeader
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -324,7 +324,7 @@ func chrome103(t *testing.T) {
 
 	req.Header = defaultHeader
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -349,7 +349,7 @@ func safari_16_0(t *testing.T) {
 
 	req.Header = defaultHeader
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -374,7 +374,7 @@ func safari_iOS_16_0(t *testing.T) {
 
 	req.Header = defaultHeader
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -399,7 +399,7 @@ func firefox_105(t *testing.T) {
 
 	req.Header = defaultHeader
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -424,7 +424,7 @@ func firefox_106(t *testing.T) {
 
 	req.Header = defaultHeader
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -449,7 +449,7 @@ func firefox_108(t *testing.T) {
 
 	req.Header = defaultHeader
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -474,7 +474,7 @@ func firefox_110(t *testing.T) {
 
 	req.Header = defaultHeader
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -499,7 +499,7 @@ func opera_91(t *testing.T) {
 
 	req.Header = defaultHeader
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -559,7 +559,7 @@ func okhttp4Android13(t *testing.T) {
 
 	req.Header = defaultOkHttp4Header
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -584,7 +584,7 @@ func okhttp4Android12(t *testing.T) {
 
 	req.Header = defaultOkHttp4Header
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -609,7 +609,7 @@ func okhttp4Android11(t *testing.T) {
 
 	req.Header = defaultOkHttp4Header
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -634,7 +634,7 @@ func okhttp4Android10(t *testing.T) {
 
 	req.Header = defaultOkHttp4Header
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -659,7 +659,7 @@ func okhttp4Android9(t *testing.T) {
 
 	req.Header = defaultOkHttp4Header
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -684,7 +684,7 @@ func okhttp4Android8(t *testing.T) {
 
 	req.Header = defaultOkHttp4Header
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -709,7 +709,7 @@ func okhttp4Android7(t *testing.T) {
 
 	req.Header = defaultOkHttp4Header
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 	if err != nil {
 		t.Fatal(err)
 	}

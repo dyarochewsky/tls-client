@@ -85,7 +85,7 @@ func sslPinning() {
 		},
 	}
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 
 	if err != nil {
 		log.Println(err)
@@ -160,7 +160,7 @@ func requestToppsAsChrome107Client() {
 		},
 	}
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 
 	if err != nil {
 		log.Println(err)
@@ -218,7 +218,7 @@ func postAsTlsClient() {
 		},
 	}
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 
 	if err != nil {
 		log.Println(err)
@@ -283,7 +283,7 @@ func requestWithFollowRedirectSwitch() {
 		},
 	}
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 
 	if err != nil {
 		log.Println(err)
@@ -296,7 +296,7 @@ func requestWithFollowRedirectSwitch() {
 
 	client.SetFollowRedirect(true)
 
-	resp, err = client.Do(req)
+	resp, _, err = client.Do(req)
 	if err != nil {
 		log.Println(err)
 		return
@@ -326,7 +326,7 @@ func downloadImageWithTlsClient() {
 		return
 	}
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 
 	if err != nil {
 		log.Println(err)
@@ -419,7 +419,7 @@ func rotateProxiesOnClient() {
 		},
 	}
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 
 	if err != nil {
 		log.Println(err)
@@ -449,7 +449,7 @@ func rotateProxiesOnClient() {
 		return
 	}
 
-	resp, err = client.Do(req)
+	resp, _, err = client.Do(req)
 	if err != nil {
 		log.Println(err)
 		return
@@ -626,7 +626,7 @@ func requestWithCustomClient() {
 		},
 	}
 
-	resp, err := client.Do(req)
+	resp, _, err := client.Do(req)
 
 	if err != nil {
 		log.Println(err)

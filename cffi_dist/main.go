@@ -238,7 +238,7 @@ func request(requestParams *C.char) *C.char {
 		tlsClient.SetCookies(req.URL, cookies)
 	}
 
-	resp, reqErr := tlsClient.Do(req)
+	resp, _, reqErr := tlsClient.Do(req)
 
 	if reqErr != nil {
 		clientErr := tls_client_cffi_src.NewTLSClientError(fmt.Errorf("failed to do request: %w", reqErr))
